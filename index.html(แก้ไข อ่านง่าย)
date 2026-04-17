@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drone Racing Leaderboard v5.5</title>
+    <title>Drone Racing Pro v5.8</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Kanit:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
@@ -33,7 +33,7 @@
                 <div class="bg-blue-600 w-10 h-10 rounded-full flex items-center justify-center font-black text-2xl shadow-xl">DR</div>
                 <div>
                     <h1 class="text-blue-400 font-extrabold tracking-widest text-lg uppercase digital-font">Drone Racing</h1>
-                    <p class="text-[8px] text-slate-500 uppercase tracking-tighter">Pro Leaderboard v5.5</p>
+                    <p class="text-[8px] text-slate-500 uppercase tracking-tighter">Database Connected v5.8</p>
                 </div>
             </div>
             
@@ -47,8 +47,8 @@
             </div>
 
             <div class="text-right text-slate-400 text-[10px] uppercase font-bold tracking-widest flex items-center gap-2">
-                <span class="inline-block w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                System Ready
+                <span id="syncStatus" class="inline-block w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-glow"></span>
+                Live Database
             </div>
         </div>
 
@@ -56,17 +56,17 @@
             
             <div class="lg:col-span-4 h-full">
                 <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl h-fit">
-                    <h2 class="text-slate-400 text-xs font-bold mb-6 uppercase tracking-widest border-b border-slate-700 pb-2">Entry Panel</h2>
+                    <h2 class="text-slate-400 text-xs font-bold mb-6 uppercase tracking-widest border-b border-slate-700 pb-2">Control Panel</h2>
                     <div class="space-y-6">
                         <div>
-                            <label class="text-[10px] text-slate-500 uppercase font-bold mb-2 block">Team Selection</label>
+                            <label class="text-[10px] text-slate-500 uppercase font-bold mb-2 block">Team / Mode Selection</label>
                             <select id="teamId" onchange="switchTab(this.value)" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-4 text-white font-bold text-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                                <option value="">-- กำลังโหลดทีม --</option>
+                                <option value="">-- กำลังโหลดข้อมูลจาก Google Sheet --</option>
                             </select>
                         </div>
                         
                         <div>
-                            <label class="text-[10px] text-slate-500 uppercase font-bold mb-2 block">Time (M : S : MS)</label>
+                            <label class="text-[10px] text-slate-500 uppercase font-bold mb-2 block">Record Time (M : S : MS)</label>
                             <div class="flex items-center gap-2 bg-slate-900 p-4 rounded-xl border border-slate-600 shadow-inner">
                                 <input type="number" id="inMin" placeholder="0" class="w-full bg-transparent text-center text-4xl font-bold outline-none text-blue-400">
                                 <span class="text-slate-600 font-bold text-2xl">:</span>
@@ -76,7 +76,7 @@
                             </div>
                         </div>
 
-                        <button onclick="addLap()" id="addBtn" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-xl font-black text-xl transition-all shadow-lg text-white active:scale-95">
+                        <button onclick="addLap()" id="addBtn" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-xl font-black text-xl transition-all shadow-lg text-white active:scale-95 shadow-blue-900/20">
                             SAVE RECORD
                         </button>
                     </div>
@@ -86,8 +86,8 @@
             <div class="lg:col-span-8 bg-slate-800 rounded-2xl border border-slate-700 shadow-xl overflow-hidden flex flex-col h-full">
                 <div class="bg-slate-700/30 px-6 py-5 flex justify-between items-center border-b border-slate-600">
                     <div>
-                        <p id="headerLabel" class="text-[10px] text-slate-500 font-bold uppercase mb-1">Active View</p>
-                        <h2 id="displayTeamName" class="font-bold text-3xl text-blue-400 uppercase tracking-widest">- SELECT MODE -</h2>
+                        <p id="headerLabel" class="text-[10px] text-slate-500 font-bold uppercase mb-1">Display Mode</p>
+                        <h2 id="displayTeamName" class="font-bold text-3xl text-blue-400 uppercase tracking-widest">- SELECT VIEW -</h2>
                     </div>
                     <div id="displayRound" class="text-sm font-bold bg-slate-900/60 text-blue-400 px-6 py-2 rounded-full border border-blue-700 uppercase">
                         Rounds: 0 / 2
@@ -98,7 +98,7 @@
                     <table class="w-full text-left">
                         <thead id="tableHead" class="bg-slate-900/40 text-slate-500 text-[10px] uppercase sticky top-0">
                             </thead>
-                        <tbody id="scoreBody" class="divide-y divide-slate-700/30 font-medium">
+                        <tbody id="scoreBody" class="divide-y divide-slate-700/30">
                             </tbody>
                     </table>
                 </div>
@@ -115,25 +115,57 @@
         let currentMode = "none";
         let currentActiveId = "";
 
+        // ดึงข้อมูลเมื่อโหลดหน้าเว็บ
         window.onload = async () => {
+            await syncWithDatabase();
+        };
+
+        async function syncWithDatabase() {
             try {
                 const response = await fetch(SCRIPT_URL);
                 const teams = await response.json(); 
                 const select = document.getElementById('teamId');
-                select.innerHTML = '<option value="">-- เลือกทีม --</option>';
+                
+                // เก็บค่าเก่าไว้ก่อนเพื่อรีเฟรชหน้าจอเดิม
+                const lastSelected = select.value;
+
+                select.innerHTML = '<option value="">-- เลือกรายการ --</option>';
                 select.innerHTML += '<option value="VIEW_ALL" style="color:#10b981; font-weight:bold;">🏆 ตารางสรุปอันดับ (Leaderboard)</option>';
                 
                 teams.forEach(team => {
                     select.innerHTML += `<option value="${team.id}">${team.name}</option>`;
-                    allTeamsData[team.id] = { name: team.name, laps: [] };
+                    // เติมข้อมูลที่ดึงมาจาก Database ลงในตัวแปร
+                    allTeamsData[team.id] = { 
+                        name: team.name, 
+                        laps: team.laps || [] 
+                    };
                 });
-            } catch (e) { alert("Error connecting to server."); }
-        };
+
+                if(lastSelected) {
+                    select.value = lastSelected;
+                    switchTab(lastSelected);
+                }
+            } catch (e) { 
+                console.error("Sync Error:", e);
+                alert("ไม่สามารถซิงค์ข้อมูลจากฐานข้อมูลได้");
+            }
+        }
 
         function switchTab(val) {
-            if(!val) return;
-            if(val === "VIEW_ALL") { currentMode = "all"; renderLeaderboard(); } 
-            else { currentMode = "single"; currentActiveId = val; renderSingleTeam(); }
+            if(!val) {
+                currentMode = "none";
+                document.getElementById('displayTeamName').innerText = "- SELECT VIEW -";
+                document.getElementById('scoreBody').innerHTML = '<tr><td colspan="3" class="px-8 py-20 text-center text-slate-600 italic">Please select a team or leaderboard</td></tr>';
+                return;
+            }
+            if(val === "VIEW_ALL") { 
+                currentMode = "all"; 
+                renderLeaderboard(); 
+            } else { 
+                currentMode = "single"; 
+                currentActiveId = val; 
+                renderSingleTeam(); 
+            }
         }
 
         function timeToMs(timeStr) {
@@ -143,8 +175,8 @@
 
         async function addLap() {
             const id = document.getElementById('teamId').value;
-            if (!id || id === "VIEW_ALL") return alert("กรุณาเลือกทีม!");
-            if (allTeamsData[id].laps.length >= 2) return alert("ครบ 2 รอบแล้ว!");
+            if (!id || id === "VIEW_ALL") return alert("กรุณาเลือกทีมก่อนบันทึก!");
+            if (allTeamsData[id].laps.length >= 2) return alert("ทีมนี้แข่งครบ 2 รอบแล้ว!");
 
             const m = document.getElementById('inMin').value || 0;
             const s = document.getElementById('inSec').value || 0;
@@ -154,17 +186,27 @@
             const lapData = { teamId: id, roundNum: allTeamsData[id].laps.length + 1, timeStr };
 
             try {
-                document.getElementById('addBtn').innerText = "RECORDING...";
+                document.getElementById('addBtn').innerText = "SAVING TO CLOUD...";
                 document.getElementById('addBtn').disabled = true;
+
+                // บันทึกลง Sheet
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(lapData) });
-                allTeamsData[id].laps.push(lapData);
+                
+                // อัปเดตข้อมูลในหน้าเว็บ
+                allTeamsData[id].laps.push({ roundNum: lapData.roundNum, timeStr: lapData.timeStr });
                 
                 if(currentMode === "all") renderLeaderboard(); else renderSingleTeam();
                 
-                document.getElementById('inMin').value = ''; document.getElementById('inSec').value = ''; document.getElementById('inMs').value = '';
+                document.getElementById('inMin').value = ''; 
+                document.getElementById('inSec').value = ''; 
+                document.getElementById('inMs').value = '';
                 document.getElementById('addBtn').innerText = "SAVE RECORD";
                 document.getElementById('addBtn').disabled = false;
-            } catch (e) { alert("Failed to save."); document.getElementById('addBtn').disabled = false; }
+
+            } catch (e) { 
+                alert("Error: บันทึกไม่สำเร็จ"); 
+                document.getElementById('addBtn').disabled = false;
+            }
         }
 
         function renderSingleTeam() {
@@ -174,19 +216,26 @@
             document.getElementById('displayTeamName').innerText = team.name;
             document.getElementById('displayRound').innerText = `Rounds: ${team.laps.length} / 2`;
             
-            document.getElementById('tableHead').innerHTML = `<tr><th class="px-8 py-4">Status</th><th class="px-8 py-4">Lap</th><th class="px-8 py-4 text-right">Time</th></tr>`;
-            tbody.innerHTML = team.laps.length === 0 ? '<tr><td colspan="3" class="px-8 py-20 text-center text-slate-600">No data found</td></tr>' : "";
+            document.getElementById('tableHead').innerHTML = `<tr><th class="px-8 py-4">Status</th><th class="px-8 py-4">Lap</th><th class="px-8 py-4 text-right">Time (M:S:MS)</th></tr>`;
+            
+            tbody.innerHTML = team.laps.length === 0 ? '<tr><td colspan="3" class="px-8 py-20 text-center text-slate-600 italic uppercase">No data for this team</td></tr>' : "";
             
             team.laps.forEach(lap => {
-                tbody.innerHTML += `<tr><td class="px-8 py-5 text-slate-600">-</td><td class="px-8 py-5 font-bold">Round ${lap.roundNum}</td><td class="px-8 py-5 digital-font text-3xl text-blue-400 text-right">${lap.timeStr}</td></tr>`;
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-700/10 transition-all">
+                        <td class="px-8 py-5 text-slate-600">-</td>
+                        <td class="px-8 py-5 font-bold text-slate-300 uppercase">Round ${lap.roundNum}</td>
+                        <td class="px-8 py-5 digital-font text-3xl text-blue-400 text-right">${lap.timeStr}</td>
+                    </tr>`;
             });
         }
 
         function renderLeaderboard() {
             const tbody = document.getElementById('scoreBody');
-            document.getElementById('headerLabel').innerText = "Tournament Standing";
+            document.getElementById('headerLabel').innerText = "Current Tournament Standings";
             document.getElementById('displayTeamName').innerText = "🏆 LEADERBOARD";
             document.getElementById('displayRound').innerText = "All Teams";
+            
             document.getElementById('tableHead').innerHTML = `<tr><th class="px-8 py-4">Rank</th><th class="px-8 py-4">Team</th><th class="px-8 py-4 text-right">Best Time</th></tr>`;
             
             let list = [];
@@ -198,7 +247,7 @@
             }
             list.sort((a, b) => a.ms - b.ms);
 
-            tbody.innerHTML = list.length === 0 ? '<tr><td colspan="3" class="px-8 py-20 text-center text-slate-600">Waiting for records...</td></tr>' : "";
+            tbody.innerHTML = list.length === 0 ? '<tr><td colspan="3" class="px-8 py-20 text-center text-slate-600 italic">Waiting for results...</td></tr>' : "";
             
             list.forEach((item, index) => {
                 let rankClass = "";
@@ -218,7 +267,7 @@
             });
         }
 
-        // Timer
+        // Timer Logic
         function updateTimerDisplay() {
             const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
             document.getElementById('timerDisplay').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
