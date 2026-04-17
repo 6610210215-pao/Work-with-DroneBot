@@ -3,20 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drone Racing Dashboard v3.6</title>
+    <title>Drone Racing Scoreboard v4.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Kanit:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Kanit', sans-serif; background-color: #0d121f; color: #f1f5f9; height: 100vh; overflow: hidden; }
         .digital-font { font-family: 'Orbitron', sans-serif; }
-        
-        .best-lap-row { background: linear-gradient(90deg, rgba(6, 78, 59, 0.4) 0%, rgba(13, 18, 31, 0) 100%); border-left: 4px solid #10b981; }
-        
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .scroll-custom::-webkit-scrollbar { width: 5px; }
         .scroll-custom::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        
-        .glow-text { drop-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+        .glow-text { text-shadow: 0 0 15px rgba(59, 130, 246, 0.6); }
     </style>
 </head>
 <body class="p-2 md:p-3">
@@ -28,7 +24,7 @@
                 <div class="bg-blue-600 w-10 h-10 rounded-full flex items-center justify-center font-black text-2xl shadow-xl">DR</div>
                 <div>
                     <h1 class="text-blue-400 font-extrabold tracking-widest text-lg uppercase digital-font">Drone Racing</h1>
-                    <p class="text-slate-500 text-[10px] font-bold uppercase">Official Scoreboard v3.6</p>
+                    <p class="text-[8px] text-slate-500 uppercase tracking-tighter">Official Scoreboard v4.0</p>
                 </div>
             </div>
             
@@ -43,7 +39,7 @@
 
             <div class="text-right text-slate-400 text-[10px] uppercase font-bold tracking-widest flex items-center gap-2">
                 <span class="inline-block w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-glow"></span>
-                Live Data Connected
+                Live Connected
             </div>
         </div>
 
@@ -51,12 +47,12 @@
             
             <div class="lg:col-span-4 h-full">
                 <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl h-fit">
-                    <h2 class="text-slate-400 text-xs font-bold mb-6 uppercase tracking-widest border-b border-slate-700 pb-2">1. Input Statistics</h2>
+                    <h2 class="text-slate-400 text-xs font-bold mb-6 uppercase tracking-widest border-b border-slate-700 pb-2">Input Statistics</h2>
                     <div class="space-y-6">
                         <div>
                             <label class="text-[10px] text-slate-500 uppercase font-bold mb-2 block">Select Team</label>
                             <select id="teamId" onchange="switchTab(this.value)" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-4 text-white font-bold text-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                                <option value="">-- เลือกทีมแข่ง --</option>
+                                <option value="">-- กำลังโหลดทีม --</option>
                             </select>
                         </div>
                         
@@ -71,7 +67,7 @@
                             </div>
                         </div>
 
-                        <button onclick="addLap()" id="addBtn" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-xl font-black text-xl transition-all shadow-lg text-white active:scale-95 shadow-blue-900/20">
+                        <button onclick="addLap()" id="addBtn" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-xl font-black text-xl transition-all shadow-lg text-white active:scale-95">
                             SAVE RECORD
                         </button>
                     </div>
@@ -81,10 +77,10 @@
             <div class="lg:col-span-8 bg-slate-800 rounded-2xl border border-slate-700 shadow-xl overflow-hidden flex flex-col h-full">
                 <div id="activeTeamHeader" class="bg-slate-700/30 px-6 py-5 flex justify-between items-center border-b border-slate-600">
                     <div>
-                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Active Performance</p>
-                        <h2 id="displayTeamName" class="font-bold text-3xl text-blue-400 uppercase tracking-widest">- NO TEAM SELECTED -</h2>
+                        <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Active Performance</p>
+                        <h2 id="displayTeamName" class="font-bold text-3xl text-blue-400 uppercase tracking-widest">- SELECT TEAM -</h2>
                     </div>
-                    <div id="displayRound" class="text-sm font-bold bg-blue-900/40 text-blue-400 px-6 py-2 rounded-full border border-blue-700 uppercase tracking-tighter shadow-inner">
+                    <div id="displayRound" class="text-sm font-bold bg-blue-900/40 text-blue-400 px-6 py-2 rounded-full border border-blue-700 uppercase">
                         Rounds: 0 / 5
                     </div>
                 </div>
@@ -99,7 +95,8 @@
                             </tr>
                         </thead>
                         <tbody id="scoreBody" class="divide-y divide-slate-700/30">
-                            </tbody>
+                            <tr><td colspan="3" class="px-8 py-20 text-center text-slate-600 italic text-xs uppercase">Please select a team to view data</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -107,121 +104,96 @@
     </div>
 
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwcoQx7DCcZC0V82i6l57fuAA0zeUdBTZEtf5Tv9D-6J50m6s0CtuxElzj0C5sM8t0nwg/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUUU59y_YpxkR6q1NhWAc14HlNnrmQUCGg6Te_UsP_eAGRlVDYqgk01BjqgmJrxAiA6g/exec';
+        
         let timeLeft = 180;
         let timerInterval;
-        let allTeamsData = {};
-        let currentActiveTeam = "";
+        let allTeamsData = {}; // เก็บ { id: { name, laps: [] } }
+        let currentActiveId = "";
 
         window.onload = async () => {
             try {
                 const response = await fetch(SCRIPT_URL);
-                const teams = await response.json();
+                const teams = await response.json(); 
                 const select = document.getElementById('teamId');
                 
+                select.innerHTML = '<option value="">-- เลือกทีมแข่ง --</option>';
                 teams.forEach(team => {
-                    if(team && team !== "Timestamp") {
-                        // เพิ่มเฉพาะใน Select Dropdown
-                        select.innerHTML += `<option value="${team}">${team}</option>`;
-                        allTeamsData[team] = [];
-                    }
+                    // ID จะถูกเก็บเป็น value, Name จะแสดงให้คนเลือก
+                    select.innerHTML += `<option value="${team.id}">${team.name}</option>`;
+                    allTeamsData[team.id] = { name: team.name, laps: [] };
                 });
-            } catch (e) { console.error(e); }
+            } catch (e) { 
+                alert("โหลดข้อมูลทีมไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่อ");
+            }
         };
 
-        function switchTab(teamName) {
-            if(!teamName) {
-                currentActiveTeam = "";
-                document.getElementById('displayTeamName').innerText = "- NO TEAM SELECTED -";
-                document.getElementById('scoreBody').innerHTML = "";
+        function switchTab(id) {
+            currentActiveId = id;
+            if(!id) {
+                document.getElementById('displayTeamName').innerText = "- SELECT TEAM -";
+                document.getElementById('scoreBody').innerHTML = '<tr><td colspan="3" class="px-8 py-20 text-center text-slate-600 italic text-xs uppercase">Please select a team</td></tr>';
                 document.getElementById('displayRound').innerText = "Rounds: 0 / 5";
                 return;
             }
-            currentActiveTeam = teamName;
             renderActiveScoreboard();
         }
 
         async function addLap() {
-            const teamId = document.getElementById('teamId').value;
+            const id = document.getElementById('teamId').value;
             const m = document.getElementById('inMin').value || 0;
             const s = document.getElementById('inSec').value || 0;
             const ms = document.getElementById('inMs').value || 0;
 
-            if (!teamId) return alert("กรุณาเลือกทีมก่อนบันทึก!");
-            if (allTeamsData[teamId].length >= 5) return alert("ทีมนี้แข่งขันครบ 5 รอบแล้ว!");
+            if (!id) return alert("กรุณาเลือกทีมก่อน!");
+            if (allTeamsData[id].laps.length >= 5) return alert("ทีมนี้แข่งครบ 5 รอบแล้ว!");
 
-            const totalMs = (parseInt(m) * 60000) + (parseInt(s) * 1000) + parseInt(ms);
             const timeStr = `${m}:${s.toString().padStart(2,'0')}:${ms.toString().padStart(3,'0')}`;
-            const lapData = { teamId, roundNum: allTeamsData[teamId].length + 1, timeStr, totalMs };
+            const lapData = { teamId: id, roundNum: allTeamsData[id].laps.length + 1, timeStr };
 
             try {
-                document.getElementById('addBtn').innerText = "SAVING TO CLOUD...";
+                document.getElementById('addBtn').innerText = "SAVING...";
                 document.getElementById('addBtn').disabled = true;
 
+                // ส่ง POST ไปบันทึกใน Sheet
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(lapData) });
                 
-                allTeamsData[teamId].push(lapData);
+                allTeamsData[id].laps.push(lapData);
                 renderActiveScoreboard();
                 
-                // Clear inputs
                 document.getElementById('inMin').value = ''; 
                 document.getElementById('inSec').value = ''; 
                 document.getElementById('inMs').value = '';
                 document.getElementById('addBtn').innerText = "SAVE RECORD";
                 document.getElementById('addBtn').disabled = false;
-
-                if (allTeamsData[teamId].length === 5) {
-                    setTimeout(() => alert(`ทีม ${teamId} บันทึกครบ 5 รอบเรียบร้อยแล้ว!`), 200);
-                }
-
             } catch (e) { 
-                alert("Error! ไม่สามารถบันทึกข้อมูลได้"); 
+                alert("Error! บันทึกไม่สำเร็จ");
                 document.getElementById('addBtn').disabled = false;
             }
         }
 
         function renderActiveScoreboard() {
-            if(!currentActiveTeam) return;
-            
-            const teamLaps = allTeamsData[currentActiveTeam];
+            const team = allTeamsData[currentActiveId];
             const tbody = document.getElementById('scoreBody');
-            const displayTeamName = document.getElementById('displayTeamName');
-            const displayRound = document.getElementById('displayRound');
-
-            displayTeamName.innerText = currentActiveTeam;
-            displayRound.innerText = `Rounds: ${teamLaps.length} / 5`;
             
-            if(teamLaps.length === 5) {
-                displayRound.className = "text-sm font-bold bg-emerald-950/50 text-emerald-400 px-6 py-2 rounded-full border border-emerald-700 uppercase tracking-tighter shadow-inner";
-            } else {
-                displayRound.className = "text-sm font-bold bg-blue-900/40 text-blue-400 px-6 py-2 rounded-full border border-blue-700 uppercase tracking-tighter shadow-inner";
-            }
-
-            const minTime = teamLaps.length > 0 ? Math.min(...teamLaps.map(l => l.totalMs)) : null;
-            let sortedLaps = [...teamLaps].sort((a,b) => a.totalMs - b.totalMs);
-
-            tbody.innerHTML = "";
-            if(teamLaps.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="px-8 py-20 text-center text-slate-600 italic uppercase tracking-widest text-xs">Waiting for data input...</td></tr>`;
-                return;
-            }
-
-            sortedLaps.forEach(lap => {
-                const isBest = lap.totalMs === minTime;
+            document.getElementById('displayTeamName').innerText = team.name; // แสดงชื่อทีมบนหัวตาราง
+            document.getElementById('displayRound').innerText = `Rounds: ${team.laps.length} / 5`;
+            
+            tbody.innerHTML = team.laps.length === 0 ? '<tr><td colspan="3" class="px-8 py-20 text-center text-slate-600 italic text-xs uppercase">No lap data for this team</td></tr>' : "";
+            
+            team.laps.forEach(lap => {
                 tbody.innerHTML += `
-                    <tr class="transition-all ${isBest ? 'best-lap-row' : 'hover:bg-slate-700/10'}">
-                        <td class="px-8 py-5">${isBest ? '<span class="bg-emerald-500 text-slate-900 px-3 py-1 rounded text-[10px] font-black italic shadow-lg">★ BEST LAP</span>' : '<span class="text-slate-600">-</span>'}</td>
+                    <tr class="hover:bg-slate-700/10 transition-all">
+                        <td class="px-8 py-5 text-slate-600">-</td>
                         <td class="px-8 py-5 font-bold text-slate-300 uppercase text-sm tracking-widest">Round ${lap.roundNum}</td>
                         <td class="px-8 py-5 digital-font text-3xl text-blue-400 text-right">${lap.timeStr}</td>
-                    </tr>
-                `;
+                    </tr>`;
             });
         }
 
         // Timer Logic
         function updateTimerDisplay() {
-            const m = Math.floor(timeLeft / 60);
-            const s = timeLeft % 60;
+            const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
             document.getElementById('timerDisplay').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
         function startTimer() { if(!timerInterval) timerInterval = setInterval(() => { if(timeLeft > 0){ timeLeft--; updateTimerDisplay(); } else stopTimer(); }, 1000); }
