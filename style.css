@@ -1,0 +1,82 @@
+/* ================= GLOBAL & FONTS ================= */
+body { 
+    font-family: 'Kanit', sans-serif; 
+    height: 100vh; 
+    overflow: hidden; 
+}
+.digital-font { font-family: 'Orbitron', sans-serif; }
+
+/* ================= THEME VARIABLES (ตัวแปรจัดการสี) ================= */
+/* 1. ธีมมืด (Dark Mode - ค่าเริ่มต้น) */
+:root {
+    --bg-body: #0d121f;          /* สีพื้นหลังนอกสุด */
+    --bg-card: #1e293b;          /* สีพื้นหลังการ์ด/กล่อง */
+    --border-color: #334155;     /* สีเส้นขอบ */
+    --text-main: #f1f5f9;        /* สีตัวอักษรหลัก */
+    --text-muted: #94a3b8;       /* สีตัวอักษรรอง */
+    --bg-input: #0f172a;         /* สีพื้นหลังช่อง input */
+    --table-head: rgba(15, 23, 42, 0.4); /* สีหัวตาราง */
+    --header-row: rgba(51, 65, 85, 0.3); /* สีแถบชื่อทีมบนตาราง */
+    --badge-bg: rgba(15, 23, 42, 0.6);   /* สีป้ายสถานะรอบ */
+    --hover-row: rgba(51, 65, 85, 0.3);  /* สีตอนเอาเมาส์ชี้แถว */
+}
+
+/* 2. ธีมสว่าง (Light Mode) */
+[data-theme="light"] {
+    --bg-body: #f1f5f9;
+    --bg-card: #ffffff;
+    --border-color: #000000;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --bg-input: #f8fafc;
+    --table-head: #e2e8f0;
+    --header-row: #f8fafc;
+    --badge-bg: #e0f2fe;
+    --hover-row: rgba(241, 245, 249, 0.8);
+}
+
+/* ================= APPLY THEME CLASSES (เรียกใช้ตัวแปร) ================= */
+body { background-color: var(--bg-body); color: var(--text-main); }
+.theme-card { background-color: var(--bg-card); border-color: var(--border-color); }
+.theme-input { background-color: var(--bg-input); border-color: var(--border-color); color: var(--text-main); }
+.theme-header-row { background-color: var(--header-row); }
+.theme-border { border-color: var(--border-color) !important; }
+.theme-text-muted { color: var(--text-muted); }
+.theme-table-head { background-color: var(--table-head); color: var(--text-muted); }
+.theme-divide { border-color: var(--border-color); }
+.theme-round-badge { background-color: var(--badge-bg); }
+.hover-theme:hover { background-color: var(--hover-row); }
+
+/* สไตล์ปุ่มธีมสลับสี */
+#themeToggleBtn { background-color: var(--bg-input); color: var(--text-main); border-color: var(--border-color); }
+
+/* ================= SPECIAL EFFECTS (เอฟเฟกต์ต่างๆ) ================= */
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.scroll-custom::-webkit-scrollbar { width: 5px; }
+.scroll-custom::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+.glow-text { text-shadow: 0 0 15px rgba(59, 130, 246, 0.6); }
+
+/* ================= LEADERBOARD RANKS (สีของอันดับ 1-3) ================= */
+/* อันดับ 1 (สีทอง) */
+.rank-1 { 
+    background: linear-gradient(90deg, rgba(202, 138, 4, 0.2) 0%, rgba(13, 18, 31, 0) 100%); 
+    border-left: 4px solid #ca8a04; 
+}
+[data-theme="light"] .rank-1 { background: linear-gradient(90deg, rgba(202, 138, 4, 0.1) 0%, rgba(255, 255, 255, 0) 100%); }
+.text-gold { color: #ca8a04; text-shadow: 0 0 10px rgba(250, 204, 21, 0.4); }
+
+/* อันดับ 2 (สีเงิน) */
+.rank-2 { 
+    background: linear-gradient(90deg, rgba(148, 163, 184, 0.15) 0%, rgba(13, 18, 31, 0) 100%); 
+    border-left: 4px solid #94a3b8; 
+}
+[data-theme="light"] .rank-2 { background: linear-gradient(90deg, rgba(148, 163, 184, 0.1) 0%, rgba(255, 255, 255, 0) 100%); }
+.text-silver { color: #cbd5e1; text-shadow: 0 0 10px rgba(203, 213, 225, 0.5); }
+
+/* อันดับ 3 (สีทองแดง) */
+.rank-3 { 
+    background: linear-gradient(90deg, rgba(180, 83, 9, 0.15) 0%, rgba(13, 18, 31, 0) 100%); 
+    border-left: 4px solid #b45309; 
+}
+[data-theme="light"] .rank-3 { background: linear-gradient(90deg, rgba(180, 83, 9, 0.1) 0%, rgba(255, 255, 255, 0) 100%); }
+.text-bronze { color: #fb923c; text-shadow: 0 0 10px rgba(251, 146, 60, 0.3); }

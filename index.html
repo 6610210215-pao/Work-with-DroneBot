@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone Racing Pro v5.8</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Kanit:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="p-2 md:p-3 transition-colors duration-300">
+
+    <div class="max-w-7xl mx-auto h-full flex flex-col gap-3">
+        
+        <div class="theme-card p-3 rounded-2xl border flex items-center justify-between shadow-2xl transition-colors duration-300">
+            
+            <div class="flex items-center gap-3">
+                <button id="themeToggleBtn" onclick="toggleTheme()" class="px-4 py-2 rounded-lg font-bold text-[10px] transition-all shadow-md hover:scale-105 active:scale-95 flex items-center gap-2 border uppercase tracking-widest">
+                    ☀️ LIGHT MODE
+                </button>
+            </div>
+            
+            <div class="text-center">
+                <div id="timerDisplay" class="digital-font text-6xl font-black text-white glow-text">03:00</div>
+                <div class="flex justify-center gap-1.5 mt-1.5">
+                    <button onclick="startTimer()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-[9px] px-4 py-1.5 rounded-full font-bold transition-all shadow-md">START</button>
+                    <button onclick="stopTimer()" class="bg-amber-600 hover:bg-amber-500 text-white text-[9px] px-4 py-1.5 rounded-full font-bold transition-all shadow-md">PAUSE</button>
+                    <button onclick="resetTimer()" class="bg-slate-600 hover:bg-slate-500 text-white text-[9px] px-4 py-1.5 rounded-full font-bold transition-all shadow-md">RESET</button>
+                </div>
+            </div>
+
+            <div class="text-right text-slate-400 text-[10px] uppercase font-bold tracking-widest flex items-center gap-2">
+                <span id="syncStatus" class="inline-block w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-glow"></span>
+                Live Database
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1 overflow-hidden">
+            
+            <div class="lg:col-span-4 h-full">
+                <div class="theme-card p-6 rounded-2xl border shadow-xl h-fit transition-colors duration-300">
+                    <h2 class="theme-text-muted text-xs font-bold mb-6 uppercase tracking-widest border-b theme-border pb-2">Control Panel</h2>
+                    <div class="space-y-6">
+                        
+                        <div>
+                            <label class="text-[10px] theme-text-muted uppercase font-bold mb-2 block">Team / Mode Selection</label>
+                            <select id="teamId" onchange="switchTab(this.value)" class="w-full theme-input border rounded-xl p-4 font-bold text-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                                <option value="">-- กำลังโหลดข้อมูลจาก Google Sheet --</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="text-[10px] theme-text-muted uppercase font-bold mb-2 block">Record Time (M : S : MS)</label>
+                            <div class="flex items-center gap-2 theme-input p-4 rounded-xl border shadow-inner">
+                                <input type="number" id="inMin" placeholder="0" class="w-full bg-transparent text-center text-4xl font-bold outline-none text-blue-400" maxlength="1">
+                                <span class="text-slate-500 font-bold text-2xl">:</span>
+                                <input type="number" id="inSec" placeholder="00" class="w-full bg-transparent text-center text-4xl font-bold outline-none text-blue-400" maxlength="2" max="59">
+                                <span class="text-slate-500 font-bold text-2xl">:</span>
+                                <input type="number" id="inMs" placeholder="000" class="w-full bg-transparent text-center text-4xl font-bold outline-none text-blue-400" maxlength="3" max="999">
+                            </div>
+                        </div>
+
+                        <button onclick="addLap()" id="addBtn" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-xl font-black text-xl transition-all shadow-lg text-white active:scale-95 shadow-blue-900/20">
+                            SAVE RECORD
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 theme-card rounded-2xl border shadow-xl overflow-hidden flex flex-col h-full transition-colors duration-300">
+                
+                <div class="theme-header-row px-6 py-5 flex justify-between items-center border-b theme-border">
+                    <div>
+                        <p id="headerLabel" class="text-[10px] theme-text-muted font-bold uppercase mb-1">Display Mode</p>
+                        <h2 id="displayTeamName" class="font-bold text-3xl text-blue-400 uppercase tracking-widest">- SELECT VIEW -</h2>
+                    </div>
+                    <div id="displayRound" class="text-sm font-bold theme-round-badge text-blue-400 px-6 py-2 rounded-full border border-blue-700 uppercase">
+                        Rounds: 0 / 2
+                    </div>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto scroll-custom bg-opacity-50">
+                    <table class="w-full text-left">
+                        <thead id="tableHead" class="theme-table-head text-[10px] uppercase sticky top-0">
+                            </thead>
+                        <tbody id="scoreBody" class="divide-y theme-divide">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="theme.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
