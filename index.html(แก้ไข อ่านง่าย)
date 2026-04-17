@@ -113,10 +113,10 @@
                 teams.forEach(team => {
                     if(team && team !== "Timestamp") {
                         // เพิ่มใน Select
-                        select.innerHTML += <option value="${team}">${team}</option>;
+                        select.innerHTML += `<option value="${team}">${team}</option>`;
                         // สร้างปุ่ม Tab
                         const btn = document.createElement('button');
-                        btn.id = tab-${team};
+                        btn.id = `tab-${team}`;
                         btn.className = "bg-slate-900 text-slate-400 border border-slate-700 px-4 py-2 rounded-xl text-xs font-bold transition-all hover:border-blue-500";
                         btn.innerText = team;
                         btn.onclick = () => switchTab(team);
@@ -135,7 +135,7 @@
             
             // ปรับสีปุ่ม Tab
             document.querySelectorAll('#teamTabs button').forEach(btn => btn.classList.remove('active-tab'));
-            const activeBtn = document.getElementById(tab-${teamName});
+            const activeBtn = document.getElementById(`tab-${teamName}`);
             if(activeBtn) activeBtn.classList.add('active-tab');
             
             renderActiveScoreboard();
@@ -151,7 +151,7 @@
             if (allTeamsData[teamId].length >= 5) return alert("ครบ 5 รอบแล้ว!");
 
             const totalMs = (parseInt(m) * 60000) + (parseInt(s) * 1000) + parseInt(ms);
-            const timeStr = ${m}:${s.toString().padStart(2,'0')}:${ms.toString().padStart(3,'0')};
+            const timeStr = `${m}:${s.toString().padStart(2,'0')}:${ms.toString().padStart(3,'0')}`;
             const lapData = { teamId, roundNum: allTeamsData[teamId].length + 1, timeStr, totalMs };
 
             try {
@@ -170,8 +170,8 @@
                 document.getElementById('addBtn').disabled = false;
 
                 if (allTeamsData[teamId].length === 5) {
-                    setTimeout(() => alert(ทีม ${teamId} ครบ 5 รอบแล้ว!), 200);
-                    document.getElementById(tab-${teamId}).innerHTML += " ✅";
+                    setTimeout(() => alert(`ทีม ${teamId} ครบ 5 รอบแล้ว!`), 200);
+                    document.getElementById(`tab-${teamId}`).innerHTML += " ✅";
                 }
             } catch (e) { alert("Error!"); document.getElementById('addBtn').disabled = false; }
         }
@@ -185,7 +185,7 @@
             const displayRound = document.getElementById('displayRound');
 
             displayTeamName.innerText = currentActiveTeam;
-            displayRound.innerText = Rounds: ${teamLaps.length} / 5;
+            displayRound.innerText = `Rounds: ${teamLaps.length} / 5`;
             
             if(teamLaps.length === 5) displayRound.classList.replace('bg-blue-900/50', 'bg-emerald-900/50');
             else displayRound.classList.replace('bg-emerald-900/50', 'bg-blue-900/50');
@@ -211,7 +211,7 @@
         function updateTimerDisplay() {
             const m = Math.floor(timeLeft / 60);
             const s = timeLeft % 60;
-            document.getElementById('timerDisplay').innerText = ${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')};
+            document.getElementById('timerDisplay').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
         function startTimer() { if(!timerInterval) timerInterval = setInterval(() => { if(timeLeft > 0){ timeLeft--; updateTimerDisplay(); } else stopTimer(); }, 1000); }
         function stopTimer() { clearInterval(timerInterval); timerInterval = null; }
