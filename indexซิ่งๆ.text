@@ -9,18 +9,17 @@
     <style>
         :root {
             --racing-red: #e11d48;
-            /* Dark Mode Specs */
             --bg-main: radial-gradient(circle at top right, #1e293b, #0f172a);
-            --panel-bg: rgba(30, 41, 59, 0.7);
+            --panel-bg: rgba(30, 41, 59, 0.9); /* เพิ่มความทึบ */
             --text-main: #f8fafc;
             --input-bg: rgba(0, 0, 0, 0.4);
             --border-color: rgba(255, 255, 255, 0.1);
         }
 
-        /* Light Mode Specs */
+        /* แก้ส่วน Light Mode ให้ขาวทึบ ไม่เลื่อม */
         body.light-mode {
             --bg-main: radial-gradient(circle at top right, #f1f5f9, #e2e8f0);
-            --panel-bg: rgba(255, 255, 255, 0.8);
+            --panel-bg: #ffffff; /* ขาวทึบ 100% */
             --text-main: #0f172a;
             --input-bg: #ffffff;
             --border-color: rgba(0, 0, 0, 0.1);
@@ -37,13 +36,21 @@
         
         .digital-font { font-family: 'Orbitron', sans-serif; }
         
+        /* แก้คลาสนี้เพื่อให้พื้นหลังทึบเวลาเลื่อน */
         .glass-panel {
             background: var(--panel-bg);
-            backdrop-filter: blur(12px);
             border: 1px solid var(--border-color);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
         }
         
+        /* ฟิกซ์หัวตารางไม่ให้เลื่อม */
+        #tableHead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: var(--panel-bg); /* ใช้สีเดียวกับ Panel เพื่อกลบตัวหนังสือที่เลื่อนขึ้นมา */
+        }
+
         .timer-glow {
             text-shadow: 0 0 20px rgba(225, 29, 72, 0.4);
             color: var(--text-main);
@@ -67,7 +74,6 @@
         .scroll-custom::-webkit-scrollbar { width: 6px; }
         .scroll-custom::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
 
-        /* Theme Toggle Button Style */
         .theme-toggle {
             cursor: pointer;
             padding: 8px 16px;
@@ -154,7 +160,7 @@
             </section>
 
             <section class="lg:col-span-8 glass-panel rounded-3xl overflow-hidden flex flex-col border-t-4 border-red-600">
-                <div class="bg-black/5 px-8 py-6 flex justify-between items-end border-b border-black/10">
+                <div class="bg-black/5 body.light-mode:bg-white px-8 py-6 flex justify-between items-end border-b border-black/10">
                     <div>
                         <h2 id="displayTeamName" class="font-black text-5xl italic uppercase leading-none tracking-tighter">- WAITING -</h2>
                         <p id="headerLabel" class="text-red-500 font-bold text-xs uppercase mt-2 tracking-widest italic">Live Statistics Interface</p>
@@ -165,8 +171,8 @@
                 </div>
                 
                 <div class="flex-1 overflow-y-auto scroll-custom">
-                    <table class="w-full">
-                        <thead id="tableHead" class="bg-black/5 text-slate-500 text-[11px] font-bold uppercase sticky top-0 backdrop-blur-md">
+                    <table class="w-full border-collapse">
+                        <thead id="tableHead" class="text-slate-500 text-[11px] font-bold uppercase">
                         </thead>
                         <tbody id="scoreBody">
                         </tbody>
@@ -185,14 +191,12 @@
         let currentMode = "none";
         let currentActiveId = "";
 
-        // --- Theme Toggle ---
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const isLight = document.body.classList.contains('light-mode');
             localStorage.setItem('theme', isLight ? 'light' : 'dark');
         }
 
-        // Load saved theme
         if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
 
         window.onload = async () => { await syncWithDatabase(); };
@@ -249,9 +253,9 @@
             const tbody = document.getElementById('scoreBody');
             document.getElementById('displayTeamName').innerText = team.name;
             document.getElementById('displayRound').innerText = `RD: ${team.laps.length} / 2`;
-            document.getElementById('tableHead').innerHTML = `<tr><th class="px-8 py-4">#</th><th class="px-8 py-4">Session</th><th class="px-8 py-4 text-right">Time</th></tr>`;
+            document.getElementById('tableHead').innerHTML = `<tr><th class="px-8 py-4 text-left">#</th><th class="px-8 py-4 text-left">Session</th><th class="px-8 py-4 text-right">Time</th></tr>`;
             tbody.innerHTML = team.laps.map(lap => `
-                <tr class="border-b border-black/5 bg-black/5">
+                <tr class="border-b border-black/5">
                     <td class="px-8 py-6 text-red-600 font-bold">-</td>
                     <td class="px-8 py-6 font-bold uppercase opacity-70">Round ${lap.roundNum}</td>
                     <td class="px-8 py-6 digital-font text-4xl text-right font-black">${lap.timeStr}</td>
@@ -262,7 +266,7 @@
             const tbody = document.getElementById('scoreBody');
             document.getElementById('displayTeamName').innerText = "LEADERBOARD";
             document.getElementById('displayRound').innerText = "LIVE";
-            document.getElementById('tableHead').innerHTML = `<tr><th class="px-8 py-4">Rank</th><th class="px-8 py-4">Team</th><th class="px-8 py-4 text-right">Best Time</th></tr>`;
+            document.getElementById('tableHead').innerHTML = `<tr><th class="px-8 py-4 text-left">Rank</th><th class="px-8 py-4 text-left">Team</th><th class="px-8 py-4 text-right">Best Time</th></tr>`;
             let list = Object.keys(allTeamsData).filter(id => allTeamsData[id].laps.length > 0).map(id => {
                 let best = allTeamsData[id].laps.reduce((m, l) => timeToMs(l.timeStr) < timeToMs(m.timeStr) ? l : m);
                 return { name: allTeamsData[id].name, bestTime: best.timeStr, ms: timeToMs(best.timeStr) };
@@ -276,7 +280,6 @@
                 </tr>`).join('');
         }
 
-        // Timer Logic
         function updateTimerDisplay() {
             const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
             document.getElementById('timerDisplay').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
