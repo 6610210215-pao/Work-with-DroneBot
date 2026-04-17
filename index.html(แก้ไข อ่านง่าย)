@@ -3,165 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drone Racing Grand Championship</title>
+    <title>Drone Racing Pro v5.8</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Bai+Jamjuree:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Kanit:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --racing-red: #e11d48;
-            --dark-bg: #0f172a;
-            --panel-bg: rgba(30, 41, 59, 0.7);
-        }
-        body { 
-            font-family: 'Bai Jamjuree', sans-serif; 
-            background: radial-gradient(circle at top right, #1e293b, #0f172a);
-            color: #f8fafc; 
-            height: 100vh; 
-            overflow: hidden; 
-        }
+        body { font-family: 'Kanit', sans-serif; background-color: #0d121f; color: #f1f5f9; height: 100vh; overflow: hidden; }
         .digital-font { font-family: 'Orbitron', sans-serif; }
-        
-        /* สไตล์ความสวยงามระดับพรีเมียม */
-        .glass-panel {
-            background: var(--panel-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-        }
-        
-        .timer-glow {
-            text-shadow: 0 0 20px rgba(225, 29, 72, 0.5);
-            color: #ffffff;
-        }
-
-        .btn-racing {
-            background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .btn-racing:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4);
-            filter: brightness(1.1);
-        }
-
-        /* ตารางอันดับสไตล์ Championship */
-        .rank-row { transition: all 0.2s; border-left: 4px solid transparent; }
-        .rank-1 { background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, transparent 100%); border-left-color: #fbbf24; }
-        .rank-2 { background: linear-gradient(90deg, rgba(226, 232, 240, 0.1) 0%, transparent 100%); border-left-color: #94a3b8; }
-        .rank-3 { background: linear-gradient(90deg, rgba(251, 146, 60, 0.1) 0%, transparent 100%); border-left-color: #ea580c; }
-        
-        input::placeholder { color: #475569; }
-        .scroll-custom::-webkit-scrollbar { width: 6px; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .scroll-custom::-webkit-scrollbar { width: 5px; }
         .scroll-custom::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .glow-text { text-shadow: 0 0 15px rgba(59, 130, 246, 0.6); }
+        
+        /* สไตล์พิเศษสำหรับลำดับ 1-3 */
+        .rank-1 { background: linear-gradient(90deg, rgba(202, 138, 4, 0.2) 0%, rgba(13, 18, 31, 0) 100%); border-left: 4px solid #ca8a04; }
+        .rank-2 { background: linear-gradient(90deg, rgba(148, 163, 184, 0.15) 0%, rgba(13, 18, 31, 0) 100%); border-left: 4px solid #94a3b8; }
+        .rank-3 { background: linear-gradient(90deg, rgba(180, 83, 9, 0.15) 0%, rgba(13, 18, 31, 0) 100%); border-left: 4px solid #b45309; }
+        
+        .text-gold { color: #facc15; text-shadow: 0 0 10px rgba(250, 204, 21, 0.4); }
+        .text-silver { color: #e2e8f0; text-shadow: 0 0 10px rgba(226, 232, 240, 0.3); }
+        .text-bronze { color: #fb923c; text-shadow: 0 0 10px rgba(251, 146, 60, 0.3); }
     </style>
 </head>
-<body class="p-4">
+<body class="p-2 md:p-3">
 
-    <div class="max-w-[1600px] mx-auto h-full flex flex-col gap-4">
+    <div class="max-w-7xl mx-auto h-full flex flex-col gap-3">
         
-        <header class="glass-panel rounded-3xl p-4 flex items-center justify-between border-b-4 border-red-600">
-            <div class="flex items-center gap-4">
-                <div class="bg-red-600 p-2 rounded-lg shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                </div>
+        <div class="bg-slate-800 p-3 rounded-2xl border border-slate-700 shadow-2xl flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 w-10 h-10 rounded-full flex items-center justify-center font-black text-2xl shadow-xl">DR</div>
                 <div>
-                    <h1 class="digital-font text-2xl font-black tracking-tighter leading-none italic">DRONE <span class="text-red-600">CHAMPIONSHIP</span></h1>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">Official Timing System v6.0</p>
+                    <h1 class="text-blue-400 font-extrabold tracking-widest text-lg uppercase digital-font">Drone Racing</h1>
+                    <p class="text-[8px] text-slate-500 uppercase tracking-tighter">Database Connected v5.8</p>
                 </div>
             </div>
             
-            <div class="flex flex-col items-center">
-                <div id="timerDisplay" class="digital-font text-7xl font-black timer-glow leading-none">03:00</div>
-                <div class="flex gap-2 mt-2">
-                    <button onclick="startTimer()" class="bg-white/10 hover:bg-emerald-600 text-[10px] font-bold px-4 py-1 rounded-full transition-all border border-white/20">START</button>
-                    <button onclick="stopTimer()" class="bg-white/10 hover:bg-red-600 text-[10px] font-bold px-4 py-1 rounded-full transition-all border border-white/20">STOP</button>
-                    <button onclick="resetTimer()" class="bg-white/10 hover:bg-slate-600 text-[10px] font-bold px-4 py-1 rounded-full transition-all border border-white/20">RESET</button>
+            <div class="text-center">
+                <div id="timerDisplay" class="digital-font text-6xl font-black text-white glow-text">03:00</div>
+                <div class="flex justify-center gap-1.5 mt-1.5">
+                    <button onclick="startTimer()" class="bg-emerald-600 hover:bg-emerald-500 text-[9px] px-4 py-1.5 rounded-full font-bold transition-all shadow-md">START</button>
+                    <button onclick="stopTimer()" class="bg-amber-600 hover:bg-amber-500 text-[9px] px-4 py-1.5 rounded-full font-bold transition-all shadow-md">PAUSE</button>
+                    <button onclick="resetTimer()" class="bg-slate-600 hover:bg-slate-500 text-[9px] px-4 py-1.5 rounded-full font-bold transition-all shadow-md">RESET</button>
                 </div>
             </div>
 
-            <div class="flex items-center gap-4">
-                <div class="text-right hidden md:block">
-                    <div class="text-[10px] font-bold text-slate-500 uppercase">System Status</div>
-                    <div class="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase">
-                        <span class="relative flex h-2 w-2">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                        </span>
-                        Live Connection
-                    </div>
-                </div>
+            <div class="text-right text-slate-400 text-[10px] uppercase font-bold tracking-widest flex items-center gap-2">
+                <span id="syncStatus" class="inline-block w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-glow"></span>
+                Live Database
             </div>
-        </header>
+        </div>
 
-        <main class="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1 overflow-hidden">
             
-            <section class="lg:col-span-4 flex flex-col gap-4">
-                <div class="glass-panel p-6 rounded-3xl h-full border-t-4 border-white">
-                    <h2 class="text-red-600 font-black text-sm uppercase tracking-widest mb-6 flex items-center gap-2">
-                        <span class="w-2 h-4 bg-red-600 block"></span> Input Statistics
-                    </h2>
-                    
-                    <div class="space-y-8">
+            <div class="lg:col-span-4 h-full">
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl h-fit">
+                    <h2 class="text-slate-400 text-xs font-bold mb-6 uppercase tracking-widest border-b border-slate-700 pb-2">Control Panel</h2>
+                    <div class="space-y-6">
                         <div>
-                            <label class="text-[11px] font-bold text-slate-400 uppercase mb-3 block italic">1. Select Competitor</label>
-                            <select id="teamId" onchange="switchTab(this.value)" class="w-full bg-slate-900/80 border-2 border-slate-700 rounded-2xl p-4 text-white font-bold text-xl focus:border-red-600 outline-none transition-all appearance-none cursor-pointer shadow-inner">
-                                <option value="">-- ดึงข้อมูลทีม --</option>
+                            <label class="text-[10px] text-slate-500 uppercase font-bold mb-2 block">Team / Mode Selection</label>
+                            <select id="teamId" onchange="switchTab(this.value)" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-4 text-white font-bold text-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                                <option value="">-- กำลังโหลดข้อมูลจาก Google Sheet --</option>
                             </select>
                         </div>
                         
                         <div>
-                            <label class="text-[11px] font-bold text-slate-400 uppercase mb-3 block italic">2. Lap Time Record</label>
-                            <div class="grid grid-cols-3 gap-3 bg-black/40 p-4 rounded-2xl border border-slate-700">
-                                <div class="text-center">
-                                    <span class="text-[9px] font-bold text-slate-500 uppercase">Min</span>
-                                    <input type="number" id="inMin" placeholder="0" class="w-full bg-transparent text-center text-5xl font-black digital-font text-white outline-none">
-                                </div>
-                                <div class="text-center border-x border-slate-800">
-                                    <span class="text-[9px] font-bold text-slate-500 uppercase">Sec</span>
-                                    <input type="number" id="inSec" placeholder="00" class="w-full bg-transparent text-center text-5xl font-black digital-font text-white outline-none">
-                                </div>
-                                <div class="text-center">
-                                    <span class="text-[9px] font-bold text-slate-500 uppercase">Ms</span>
-                                    <input type="number" id="inMs" placeholder="000" class="w-full bg-transparent text-center text-5xl font-black digital-font text-white outline-none">
-                                </div>
+                            <label class="text-[10px] text-slate-500 uppercase font-bold mb-2 block">Record Time (M : S : MS)</label>
+                            <div class="flex items-center gap-2 bg-slate-900 p-4 rounded-xl border border-slate-600 shadow-inner">
+                                <input type="number" id="inMin" placeholder="0" class="w-full bg-transparent text-center text-4xl font-bold outline-none text-blue-400">
+                                <span class="text-slate-600 font-bold text-2xl">:</span>
+                                <input type="number" id="inSec" placeholder="00" class="w-full bg-transparent text-center text-4xl font-bold outline-none text-blue-400">
+                                <span class="text-slate-600 font-bold text-2xl">:</span>
+                                <input type="number" id="inMs" placeholder="000" class="w-full bg-transparent text-center text-4xl font-bold outline-none text-blue-400">
                             </div>
                         </div>
 
-                        <button onclick="addLap()" id="addBtn" class="btn-racing w-full py-6 rounded-2xl font-black text-2xl shadow-2xl flex items-center justify-center gap-3 active:scale-95">
-                            <span>RECORD LAP</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" />
-                            </svg>
+                        <button onclick="addLap()" id="addBtn" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-xl font-black text-xl transition-all shadow-lg text-white active:scale-95 shadow-blue-900/20">
+                            SAVE RECORD
                         </button>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <section class="lg:col-span-8 glass-panel rounded-3xl overflow-hidden flex flex-col border-t-4 border-red-600">
-                <div class="bg-slate-900/80 px-8 py-6 flex justify-between items-end border-b border-slate-700">
+            <div class="lg:col-span-8 bg-slate-800 rounded-2xl border border-slate-700 shadow-xl overflow-hidden flex flex-col h-full">
+                <div class="bg-slate-700/30 px-6 py-5 flex justify-between items-center border-b border-slate-600">
                     <div>
-                        <h2 id="displayTeamName" class="font-black text-5xl text-white italic uppercase leading-none tracking-tighter">- WAITING -</h2>
-                        <p id="headerLabel" class="text-red-500 font-bold text-xs uppercase mt-2 tracking-widest">Select Team to View Stats</p>
+                        <p id="headerLabel" class="text-[10px] text-slate-500 font-bold uppercase mb-1">Display Mode</p>
+                        <h2 id="displayTeamName" class="font-bold text-3xl text-blue-400 uppercase tracking-widest">- SELECT VIEW -</h2>
                     </div>
-                    <div id="displayRound" class="digital-font text-lg font-bold bg-white text-black px-6 py-1 rounded-tl-xl rounded-br-xl">
-                        ROUND: 0 / 2
+                    <div id="displayRound" class="text-sm font-bold bg-slate-900/60 text-blue-400 px-6 py-2 rounded-full border border-blue-700 uppercase">
+                        Rounds: 0 / 2
                     </div>
                 </div>
                 
                 <div class="flex-1 overflow-y-auto scroll-custom">
-                    <table class="w-full">
-                        <thead id="tableHead" class="bg-slate-800/50 text-slate-400 text-[11px] font-bold uppercase sticky top-0 backdrop-blur-md">
+                    <table class="w-full text-left">
+                        <thead id="tableHead" class="bg-slate-900/40 text-slate-500 text-[10px] uppercase sticky top-0">
                             </thead>
-                        <tbody id="scoreBody" class="text-lg">
+                        <tbody id="scoreBody" class="divide-y divide-slate-700/30">
                             </tbody>
                     </table>
                 </div>
-            </section>
-        </main>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -173,6 +115,7 @@
         let currentMode = "none";
         let currentActiveId = "";
 
+        // ดึงข้อมูลเมื่อโหลดหน้าเว็บ
         window.onload = async () => {
             await syncWithDatabase();
         };
@@ -182,14 +125,20 @@
                 const response = await fetch(SCRIPT_URL);
                 const teams = await response.json(); 
                 const select = document.getElementById('teamId');
+                
+                // เก็บค่าเก่าไว้ก่อนเพื่อรีเฟรชหน้าจอเดิม
                 const lastSelected = select.value;
 
-                select.innerHTML = '<option value="">-- Competitors --</option>';
-                select.innerHTML += '<option value="VIEW_ALL" style="color:#ef4444; font-weight:black;">🚩 LEADERBOARD (LIVE)</option>';
+                select.innerHTML = '<option value="">-- เลือกรายการ --</option>';
+                select.innerHTML += '<option value="VIEW_ALL" style="color:#10b981; font-weight:bold;">🏆 ตารางสรุปอันดับ (Leaderboard)</option>';
                 
                 teams.forEach(team => {
                     select.innerHTML += `<option value="${team.id}">${team.name}</option>`;
-                    allTeamsData[team.id] = { name: team.name, laps: team.laps || [] };
+                    // เติมข้อมูลที่ดึงมาจาก Database ลงในตัวแปร
+                    allTeamsData[team.id] = { 
+                        name: team.name, 
+                        laps: team.laps || [] 
+                    };
                 });
 
                 if(lastSelected) {
@@ -197,19 +146,26 @@
                     switchTab(lastSelected);
                 }
             } catch (e) { 
-                alert("Cloud Connection Failed");
+                console.error("Sync Error:", e);
+                alert("ไม่สามารถซิงค์ข้อมูลจากฐานข้อมูลได้");
             }
         }
 
         function switchTab(val) {
             if(!val) {
                 currentMode = "none";
-                document.getElementById('displayTeamName').innerText = "- WAITING -";
-                document.getElementById('scoreBody').innerHTML = '<tr><td colspan="3" class="px-8 py-32 text-center text-slate-600 font-bold uppercase tracking-widest opacity-30">No selection</td></tr>';
+                document.getElementById('displayTeamName').innerText = "- SELECT VIEW -";
+                document.getElementById('scoreBody').innerHTML = '<tr><td colspan="3" class="px-8 py-20 text-center text-slate-600 italic">Please select a team or leaderboard</td></tr>';
                 return;
             }
-            if(val === "VIEW_ALL") { currentMode = "all"; renderLeaderboard(); } 
-            else { currentMode = "single"; currentActiveId = val; renderSingleTeam(); }
+            if(val === "VIEW_ALL") { 
+                currentMode = "all"; 
+                renderLeaderboard(); 
+            } else { 
+                currentMode = "single"; 
+                currentActiveId = val; 
+                renderSingleTeam(); 
+            }
         }
 
         function timeToMs(timeStr) {
@@ -219,60 +175,68 @@
 
         async function addLap() {
             const id = document.getElementById('teamId').value;
-            if (!id || id === "VIEW_ALL") return alert("Please select a team!");
-            if (allTeamsData[id].laps.length >= 2) return alert("Rounds Limit Reached!");
+            if (!id || id === "VIEW_ALL") return alert("กรุณาเลือกทีมก่อนบันทึก!");
+            if (allTeamsData[id].laps.length >= 2) return alert("ทีมนี้แข่งครบ 2 รอบแล้ว!");
 
-            // ปรับแต่งการกรอกเวลาให้เป็น 0:00:000 อัตโนมัติ
             const m = document.getElementById('inMin').value || 0;
             const s = document.getElementById('inSec').value || 0;
             const ms = document.getElementById('inMs').value || 0;
-            
             const timeStr = `${m}:${s.toString().padStart(2,'0')}:${ms.toString().padStart(3,'0')}`;
+            
             const lapData = { teamId: id, roundNum: allTeamsData[id].laps.length + 1, timeStr };
 
             try {
-                const btn = document.getElementById('addBtn');
-                btn.innerHTML = '<span class="animate-pulse">TRANSMITTING...</span>';
-                btn.disabled = true;
+                document.getElementById('addBtn').innerText = "SAVING TO CLOUD...";
+                document.getElementById('addBtn').disabled = true;
 
+                // บันทึกลง Sheet
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(lapData) });
                 
+                // อัปเดตข้อมูลในหน้าเว็บ
                 allTeamsData[id].laps.push({ roundNum: lapData.roundNum, timeStr: lapData.timeStr });
+                
                 if(currentMode === "all") renderLeaderboard(); else renderSingleTeam();
                 
                 document.getElementById('inMin').value = ''; 
                 document.getElementById('inSec').value = ''; 
                 document.getElementById('inMs').value = '';
-                btn.innerHTML = '<span>RECORD LAP</span>';
-                btn.disabled = false;
-            } catch (e) { alert("Network Error"); }
+                document.getElementById('addBtn').innerText = "SAVE RECORD";
+                document.getElementById('addBtn').disabled = false;
+
+            } catch (e) { 
+                alert("Error: บันทึกไม่สำเร็จ"); 
+                document.getElementById('addBtn').disabled = false;
+            }
         }
 
         function renderSingleTeam() {
             const team = allTeamsData[currentActiveId];
             const tbody = document.getElementById('scoreBody');
-            document.getElementById('headerLabel').innerText = "Detailed Performance Analysis";
+            document.getElementById('headerLabel').innerText = "Team Performance";
             document.getElementById('displayTeamName').innerText = team.name;
-            document.getElementById('displayRound').innerText = `ROUND: ${team.laps.length} / 2`;
-            document.getElementById('tableHead').innerHTML = `<tr><th class="px-8 py-4">#</th><th class="px-8 py-4">Lap Attempt</th><th class="px-8 py-4 text-right">Time Record</th></tr>`;
+            document.getElementById('displayRound').innerText = `Rounds: ${team.laps.length} / 2`;
             
-            tbody.innerHTML = team.laps.length === 0 ? '<tr><td colspan="3" class="px-8 py-20 text-center text-slate-600">No records found.</td></tr>' : "";
+            document.getElementById('tableHead').innerHTML = `<tr><th class="px-8 py-4">Status</th><th class="px-8 py-4">Lap</th><th class="px-8 py-4 text-right">Time (M:S:MS)</th></tr>`;
+            
+            tbody.innerHTML = team.laps.length === 0 ? '<tr><td colspan="3" class="px-8 py-20 text-center text-slate-600 italic uppercase">No data for this team</td></tr>' : "";
+            
             team.laps.forEach(lap => {
                 tbody.innerHTML += `
-                    <tr class="border-b border-white/5 bg-white/5">
-                        <td class="px-8 py-6 text-red-500 font-bold">-</td>
-                        <td class="px-8 py-6 font-bold uppercase tracking-widest text-slate-300">Round ${lap.roundNum}</td>
-                        <td class="px-8 py-6 digital-font text-4xl text-white text-right font-black">${lap.timeStr}</td>
+                    <tr class="hover:bg-slate-700/10 transition-all">
+                        <td class="px-8 py-5 text-slate-600">-</td>
+                        <td class="px-8 py-5 font-bold text-slate-300 uppercase">Round ${lap.roundNum}</td>
+                        <td class="px-8 py-5 digital-font text-3xl text-blue-400 text-right">${lap.timeStr}</td>
                     </tr>`;
             });
         }
 
         function renderLeaderboard() {
             const tbody = document.getElementById('scoreBody');
-            document.getElementById('headerLabel').innerText = "Live Tournament Standing";
-            document.getElementById('displayTeamName').innerText = "LEADERBOARD";
-            document.getElementById('displayRound').innerText = "OVERALL";
-            document.getElementById('tableHead').innerHTML = `<tr><th class="px-8 py-4">Position</th><th class="px-8 py-4">Team Name</th><th class="px-8 py-4 text-right">Personal Best</th></tr>`;
+            document.getElementById('headerLabel').innerText = "Current Tournament Standings";
+            document.getElementById('displayTeamName').innerText = "🏆 LEADERBOARD";
+            document.getElementById('displayRound').innerText = "All Teams";
+            
+            document.getElementById('tableHead').innerHTML = `<tr><th class="px-8 py-4">Rank</th><th class="px-8 py-4">Team</th><th class="px-8 py-4 text-right">Best Time</th></tr>`;
             
             let list = [];
             for (let id in allTeamsData) {
@@ -282,22 +246,28 @@
                 }
             }
             list.sort((a, b) => a.ms - b.ms);
+
             tbody.innerHTML = list.length === 0 ? '<tr><td colspan="3" class="px-8 py-20 text-center text-slate-600 italic">Waiting for results...</td></tr>' : "";
             
             list.forEach((item, index) => {
-                let rankClass = index === 0 ? "rank-1" : index === 1 ? "rank-2" : index === 2 ? "rank-3" : "";
-                let rankText = index === 0 ? "text-amber-400" : index === 1 ? "text-slate-300" : index === 2 ? "text-orange-500" : "text-slate-500";
-                
+                let rankClass = "";
+                let textClass = "text-blue-400";
+                let rankLabel = (index + 1).toString().padStart(2, '0');
+
+                if (index === 0) { rankClass = "rank-1"; textClass = "text-gold"; rankLabel = "🏆 01"; }
+                else if (index === 1) { rankClass = "rank-2"; textClass = "text-silver"; rankLabel = "🥈 02"; }
+                else if (index === 2) { rankClass = "rank-3"; textClass = "text-bronze"; rankLabel = "🥉 03"; }
+
                 tbody.innerHTML += `
-                    <tr class="rank-row ${rankClass} border-b border-white/5">
-                        <td class="px-8 py-6 digital-font text-3xl font-black ${rankText}">P${(index + 1).toString().padStart(2, '0')}</td>
-                        <td class="px-8 py-6 font-black text-white text-xl italic uppercase">${item.name}</td>
-                        <td class="px-8 py-6 digital-font text-4xl text-white text-right font-black">${item.bestTime}</td>
+                    <tr class="${rankClass} transition-all">
+                        <td class="px-8 py-5 font-black digital-font text-2xl ${textClass}">${rankLabel}</td>
+                        <td class="px-8 py-5 font-bold text-slate-200">${item.name}</td>
+                        <td class="px-8 py-5 digital-font text-3xl ${textClass} text-right">${item.bestTime}</td>
                     </tr>`;
             });
         }
 
-        // Timer
+        // Timer Logic
         function updateTimerDisplay() {
             const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
             document.getElementById('timerDisplay').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
