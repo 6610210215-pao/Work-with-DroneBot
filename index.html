@@ -3,97 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drone Racing Pro v5.8</title>
-    
+    <title>DRONE MRC 2026 - Control System</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Kanit:wght@300;500;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,700;1,700&family=Orbitron:wght@400;900&family=Share+Tech+Mono&family=Kanit:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="p-2 md:p-3 transition-colors duration-300">
+<body class="bg-slate-900 text-white transition-colors duration-500">
 
-    <div class="max-w-7xl mx-auto h-full flex flex-col gap-3">
+    <section id="homePage" class="min-h-screen bg-slate-900 flex items-center justify-center p-6">
         
-        <div class="theme-card p-3 rounded-2xl border flex items-center justify-between shadow-2xl transition-colors duration-300">
-            
-            <div class="flex items-center gap-3">
-                <button id="themeToggleBtn" onclick="toggleTheme()" class="px-4 py-2 rounded-lg font-bold text-[10px] transition-all shadow-md hover:scale-105 active:scale-95 flex items-center gap-2 border uppercase tracking-widest">
-                    ☀️ LIGHT MODE
-                </button>
-            </div>
-            
-            <div class="text-center">
-                <div id="timerDisplay" class="digital-font text-6xl font-black text-white glow-text">03:00</div>
-                <div class="flex justify-center gap-1.5 mt-1.5">
-                    <button onclick="startTimer()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-[9px] px-4 py-1.5 rounded-full font-bold transition-all shadow-md">START</button>
-                    <button onclick="stopTimer()" class="bg-amber-600 hover:bg-amber-500 text-white text-[9px] px-4 py-1.5 rounded-full font-bold transition-all shadow-md">PAUSE</button>
-                    <button onclick="resetTimer()" class="bg-slate-600 hover:bg-slate-500 text-white text-[9px] px-4 py-1.5 rounded-full font-bold transition-all shadow-md">RESET</button>
-                </div>
+        <button onclick="toggleTheme()" class="theme-toggle-btn absolute top-6 right-6 p-4 bg-slate-800/40 hover:bg-slate-700 text-white rounded-full border border-white/10 shadow-xl z-[100]" title="Toggle Theme">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+        </button>
+
+        <div class="max-w-7xl w-full text-center">
+            <div class="mb-10">
+                <h3 class="text-red-600 font-bold tracking-[0.5em] mb-4 animate-pulse uppercase" style="font-family: 'Share Tech Mono';">DRONEBOT SYSTEM</h3>
+                <h1 class="racing-logo-text text-7xl md:text-9xl font-black uppercase leading-none">
+                    DRONE <span class="red-accent">MRC</span><br>2026
+                </h1>
             </div>
 
-            <div class="text-right text-slate-400 text-[10px] uppercase font-bold tracking-widest flex items-center gap-2">
-                <span id="syncStatus" class="inline-block w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-glow"></span>
-                Live Database
+            <div class="flex flex-wrap justify-center gap-6 px-4">
+                
+                <div class="w-full md:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)] max-w-sm rounded-3xl border-2 border-white/5 bg-slate-800/30 p-6 shadow-2xl transition-all card-glass home-card border-t-4 border-red-500">
+                    <div class="bg-red-600 w-12 h-1 rounded-full mb-4 mx-auto"></div>
+                    <h2 class="race-font text-2xl font-black text-white italic mb-6 uppercase">Drone Racing</h2>
+                    <button onclick="location.href='race-control.html?event=Drone Racing&sheet=Data Drone Racing'" class="w-full bg-red-600 hover:bg-red-500 text-white font-black py-4 rounded-xl transition-all uppercase italic shadow-lg">Enter Circuit</button>
+                </div>
+
+                <div class="w-full md:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)] max-w-sm rounded-3xl border-2 border-white/5 bg-slate-800/30 p-6 shadow-2xl transition-all card-glass home-card border-t-4 border-emerald-500">
+                    <div class="bg-emerald-500 w-12 h-1 rounded-full mb-4 mx-auto"></div>
+                    <h2 class="race-font text-2xl font-black text-white italic mb-6 uppercase">Remote Air Race</h2>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="location.href='race-control.html?event=Remote Air Race&sheet=Data Remote Air(Junior)'" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black py-4 rounded-xl uppercase italic">Junior</button>
+                        <button onclick="location.href='race-control.html?event=Remote Air Race&sheet=Data Remote Air(Senior)'" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black py-4 rounded-xl uppercase italic">Senior</button>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)] max-w-sm rounded-3xl border-2 border-white/5 bg-slate-800/30 p-6 shadow-2xl transition-all card-glass home-card border-t-4 border-blue-500">
+                    <div class="bg-blue-500 w-12 h-1 rounded-full mb-4 mx-auto"></div>
+                    <h2 class="race-font text-2xl font-black text-white italic mb-6 uppercase">Auto Air Race</h2>
+                    <div class="grid grid-cols-2 gap-3">
+                       <button onclick="location.href='race-control.html?event=Automatic Air Race&sheet=Data Automatic Air Race (junior)'" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-black py-4 rounded-xl uppercase italic">Junior</button>
+                       <button onclick="location.href='race-control.html?event=Automatic Air Race&sheet=Data Automatic Air Race (senior)'" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-black py-4 rounded-xl uppercase italic">Senior</button>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)] max-w-sm rounded-3xl border-2 border-white/5 bg-slate-800/30 p-6 shadow-2xl border-t-4 border-cyan-500 card-glass home-card">
+                    <div class="bg-cyan-500 w-12 h-1 rounded-full mb-4 mx-auto"></div>
+                    <h2 class="race-font text-2xl font-black text-cyan-400 italic mb-6 uppercase">Drone Soccer</h2>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="location.href='soccer.html?event=Drone Soccer&sheet=Drone Soccer Class20(3x3)'" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-black py-4 rounded-xl uppercase italic">Class 20</button>
+                        <button onclick="location.href='soccer.html?event=Drone Soccer&sheet=Drone Soccer Class40(3x3)'" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-black py-4 rounded-xl uppercase italic">Class 40</button>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)] max-w-sm rounded-3xl border-2 border-white/5 bg-slate-800/30 p-6 shadow-2xl border-t-4 border-orange-500 card-glass home-card">
+                    <div class="bg-orange-500 w-12 h-1 rounded-full mb-4 mx-auto"></div>
+                    <h2 class="race-font text-2xl font-black text-orange-500 italic mb-6 uppercase">Futsal</h2>
+                   <button onclick="location.href='futsal.html'" 
+        class="w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-4 rounded-xl transition-all uppercase italic"> Enter Match </button>
+                </div>
+
             </div>
         </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1 overflow-hidden">
-            
-            <div class="lg:col-span-4 h-full">
-                <div class="theme-card p-6 rounded-2xl border shadow-xl h-fit transition-colors duration-300">
-                    <h2 class="theme-text-muted text-xs font-bold mb-6 uppercase tracking-widest border-b theme-border pb-2">Control Panel</h2>
-                    <div class="space-y-6">
-                        
-                        <div>
-                            <label class="text-[10px] theme-text-muted uppercase font-bold mb-2 block">Team / Mode Selection</label>
-                            <select id="teamId" onchange="switchTab(this.value)" class="w-full theme-input border rounded-xl p-4 font-bold text-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                                <option value="">-- กำลังโหลดข้อมูลจาก Google Sheet --</option>
-                            </select>
-                        </div>
-                        
-                        <div>
-                            <label class="text-[10px] theme-text-muted uppercase font-bold mb-2 block">Record Time (M : S : MS)</label>
-                            <div class="flex items-center gap-2 theme-input p-4 rounded-xl border shadow-inner">
-                                <input type="number" id="inMin" placeholder="0" class="w-full bg-transparent text-center text-4xl font-bold outline-none text-blue-400" maxlength="1">
-                                <span class="text-slate-500 font-bold text-2xl">:</span>
-                                <input type="number" id="inSec" placeholder="00" class="w-full bg-transparent text-center text-4xl font-bold outline-none text-blue-400" maxlength="2" max="59">
-                                <span class="text-slate-500 font-bold text-2xl">:</span>
-                                <input type="number" id="inMs" placeholder="000" class="w-full bg-transparent text-center text-4xl font-bold outline-none text-blue-400" maxlength="3" max="999">
-                            </div>
-                        </div>
-
-                        <button onclick="addLap()" id="addBtn" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-xl font-black text-xl transition-all shadow-lg text-white active:scale-95 shadow-blue-900/20">
-                            SAVE RECORD
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="lg:col-span-8 theme-card rounded-2xl border shadow-xl overflow-hidden flex flex-col h-full transition-colors duration-300">
-                
-                <div class="theme-header-row px-6 py-5 flex justify-between items-center border-b theme-border">
-                    <div>
-                        <p id="headerLabel" class="text-[10px] theme-text-muted font-bold uppercase mb-1">Display Mode</p>
-                        <h2 id="displayTeamName" class="font-bold text-3xl text-blue-400 uppercase tracking-widest">- SELECT VIEW -</h2>
-                    </div>
-                    <div id="displayRound" class="text-sm font-bold theme-round-badge text-blue-400 px-6 py-2 rounded-full border border-blue-700 uppercase">
-                        Rounds: 0 / 2
-                    </div>
-                </div>
-                
-                <div class="flex-1 overflow-y-auto scroll-custom bg-opacity-50">
-                    <table class="w-full text-left">
-                        <thead id="tableHead" class="theme-table-head text-[10px] uppercase sticky top-0">
-                            </thead>
-                        <tbody id="scoreBody" class="divide-y theme-divide">
-                            </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="theme.js"></script>
+    </section>
     <script src="app.js"></script>
 </body>
 </html>
