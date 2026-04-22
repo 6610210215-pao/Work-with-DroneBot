@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone Racing Scoreboard - Multi Team</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Kanit:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        .digital-font { font-family: 'Orbitron', sans-serif; }
+        .best-lap-row { background: linear-gradient(90deg, #064e3b 0%, #0f172a 100%); border-left: 4px solid #10b981; }
+        .team-card { background-color: #1e293b; border: 1px solid #334155; border-radius: 1.5rem; margin-bottom: 2rem; overflow: hidden; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto space-y-6">
+        
+        <div class="bg-slate-800 rounded-3xl p-8 shadow-2xl border border-slate-700 text-center">
+            <h1 class="text-blue-400 font-bold tracking-widest mb-2 uppercase text-xs">Drone Racing Timer</h1>
+            <div id="timerDisplay" class="digital-font text-8xl md:text-9xl font-black text-white mb-6">03:00</div>
+            <div class="flex justify-center gap-3">
+                <button onclick="startTimer()" class="bg-emerald-600 hover:bg-emerald-500 px-8 py-3 rounded-full font-bold transition-all">START</button>
+                <button onclick="stopTimer()" class="bg-amber-600 hover:bg-amber-500 px-8 py-3 rounded-full font-bold transition-all">PAUSE</button>
+                <button onclick="resetTimer()" class="bg-slate-600 hover:bg-slate-500 px-8 py-3 rounded-full font-bold transition-all">RESET</button>
+            </div>
+        </div>
+
+        <div class="bg-slate-800 rounded-3xl p-6 shadow-xl border border-slate-700">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-2 uppercase">เลือกทีม (Team ID)</label>
+                    <select id="teamId" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-4 text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="">-- กำลังโหลดชื่อทีม... --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-2 uppercase">กรอกเวลา (นาที : วินาที : มิลลิวินาที)</label>
+                    <div class="flex items-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-600">
+                        <input type="number" id="inMin" placeholder="0" class="w-full bg-transparent text-center text-xl font-bold py-2 outline-none">
+                        <span class="text-slate-600">:</span>
+                        <input type="number" id="inSec" placeholder="00" class="w-full bg-transparent text-center text-xl font-bold py-2 outline-none" max="59">
+                        <span class="text-slate-600">:</span>
+                        <input type="number" id="inMs" placeholder="000" class="w-full bg-transparent text-center text-xl font-bold py-2 outline-none" max="999">
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="addLap()" id="addBtn" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl font-black text-xl transition-all shadow-lg">
+                บันทึกสถิติ (SAVE TO CLOUD)
+            </button>
+        </div>
+
+        <hr class="border-slate-700 my-8">
+
+        <div id="scoreboardContainer" class="space-y-8">
+            </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwcoQx7DCcZC0V82i6l57fuAA0zeUdBTZEtf5Tv9D-6J50m6s0CtuxElzj0C5sM8t0nwg/exec';
+
+        let timeLeft = 180;
+        let timerInterval;
+        
+        // เก็บข้อมูลแยกตามทีม { "Team A": [lap1, lap2], "Team B": [...] }
+        let allTeamsData = {};
+
+        window.onload = async () => {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const teams = await response.json();
+                const select = document.getElementById('teamId');
+                select.innerHTML = '<option value="">-- เลือกทีม --</option>';
+                teams.forEach(team => {
+                    if(team && team !== "Timestamp") {
+                        select.innerHTML += `<option value="${team}">${team}</option>`;
+                        allTeamsData[team] = []; // เตรียมพื้นที่เก็บข้อมูลให้ทุกทีม
+                    }
+                });
+            } catch (e) { console.error("Load failed", e); }
+        };
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timeLeft / 60);
+            const s = timeLeft % 60;
+            document.getElementById('timerDisplay').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        }
+        function startTimer() { if(!timerInterval) timerInterval = setInterval(() => { if(timeLeft > 0){ timeLeft--; updateTimerDisplay(); } else stopTimer(); }, 1000); }
+        function stopTimer() { clearInterval(timerInterval); timerInterval = null; }
+        function resetTimer() { stopTimer(); timeLeft = 180; updateTimerDisplay(); }
+
+        async function addLap() {
+            const teamId = document.getElementById('teamId').value;
+            const m = document.getElementById('inMin').value || 0;
+            const s = document.getElementById('inSec').value || 0;
+            const ms = document.getElementById('inMs').value || 0;
+
+            if (!teamId) return alert("กรุณาเลือกทีม!");
+            
+            // ตรวจสอบจำนวนรอบของทีมที่เลือก
+            if (allTeamsData[teamId].length >= 5) {
+                return alert(`ทีม ${teamId} แข่งครบ 5 รอบแล้ว!`);
+            }
+
+            const totalMs = (parseInt(m) * 60000) + (parseInt(s) * 1000) + parseInt(ms);
+            const timeStr = `${m}:${s.toString().padStart(2,'0')}:${ms.toString().padStart(3,'0')}`;
+            const lapData = { teamId, roundNum: allTeamsData[teamId].length + 1, timeStr, totalMs };
+
+            try {
+                document.getElementById('addBtn').innerText = "SAVING...";
+                document.getElementById('addBtn').disabled = true;
+
+                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(lapData) });
+                
+                allTeamsData[teamId].push(lapData);
+                renderAllScoreboards();
+                
+                document.getElementById('inMin').value = ''; 
+                document.getElementById('inSec').value = ''; 
+                document.getElementById('inMs').value = '';
+                document.getElementById('addBtn').innerText = "RECORD & SAVE TO CLOUD";
+                document.getElementById('addBtn').disabled = false;
+
+                // แจ้งเตือนเมื่อทีมนั้นๆ ครบ 5 รอบ
+                if (allTeamsData[teamId].length === 5) {
+                    setTimeout(() => alert(`ยินดีด้วย! ทีม ${teamId} ทำการแข่งขันครบ 5 รอบเรียบร้อยแล้ว`), 500);
+                }
+
+            } catch (e) { 
+                alert("Error!"); 
+                document.getElementById('addBtn').disabled = false;
+            }
+        }
+
+        function renderAllScoreboards() {
+            const container = document.getElementById('scoreboardContainer');
+            container.innerHTML = ""; // ล้างหน้าจอเพื่อวาดใหม่ทั้งหมด
+
+            // วนลูปแสดงเฉพาะทีมที่มีข้อมูลแล้ว
+            for (const team in allTeamsData) {
+                if (allTeamsData[team].length > 0) {
+                    const teamLaps = allTeamsData[team];
+                    const minTime = Math.min(...teamLaps.map(l => l.totalMs));
+                    let sortedLaps = [...teamLaps].sort((a,b) => a.totalMs - b.totalMs);
+
+                    const teamHtml = `
+                        <div class="team-card shadow-lg">
+                            <div class="bg-slate-700/50 px-6 py-4 flex justify-between items-center border-b border-slate-600">
+                                <h2 class="font-bold text-xl text-blue-400 uppercase tracking-wider">${team}</h2>
+                                <div class="text-sm font-bold ${teamLaps.length === 5 ? 'bg-emerald-900/50 text-emerald-400 border-emerald-700' : 'bg-blue-900/50 text-blue-300 border-blue-700'} px-4 py-1 rounded-full border">
+                                    ROUNDS: ${teamLaps.length} / 5 ${teamLaps.length === 5 ? '✅' : ''}
+                                </div>
+                            </div>
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-900/30 text-slate-400 text-xs uppercase tracking-widest">
+                                    <tr>
+                                        <th class="px-6 py-3">Status</th>
+                                        <th class="px-6 py-3">Round</th>
+                                        <th class="px-6 py-3 text-right">Time (M:S:MS)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-700/50">
+                                    ${sortedLaps.map(lap => `
+                                        <tr class="transition-all ${lap.totalMs === minTime ? 'best-lap-row' : ''}">
+                                            <td class="px-6 py-4">${lap.totalMs === minTime ? '<span class="text-emerald-400 font-bold text-xs">★ BEST</span>' : '-'}</td>
+                                            <td class="px-6 py-4 text-sm">รอบที่ ${lap.roundNum}</td>
+                                            <td class="px-6 py-4 digital-font text-xl text-blue-400 text-right">${lap.timeStr}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', teamHtml);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
