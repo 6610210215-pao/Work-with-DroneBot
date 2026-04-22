@@ -1,7 +1,7 @@
 // =============================================================
 // 1. CONFIGURATION & GLOBAL STATE (ค่าตั้งต้นและตัวแปรหลัก)
 // =============================================================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUUU59y_YpxkR6q1NhWAc14HlNnrmQUCGg6Te_UsP_eAGRlVDYqgk01BjqgmJrxAiA6g/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzphLcVJIW04H-cvo2PYssfsvDbzepLnFO-tgVY5h5qFQwGYPT1vwizuX20CW3JHDNM1A/exec';
 
 let allTeamsData = {};            // เก็บข้อมูลทีมทั้งหมดที่ Sync มาจาก Sheets
 let currentActiveId = "VIEW_ALL"; // ID ทีมที่กำลังเลือก (ถ้าเป็น VIEW_ALL คือหน้า Leaderboard)
